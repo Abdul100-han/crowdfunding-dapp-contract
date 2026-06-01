@@ -66,11 +66,11 @@ contract CrowdfundingTest is Test {
     uint8 private constant FEED_DECIMALS = 8;
     int256 private constant INITIAL_ETH_PRICE = 2_000e8;
 
-    uint256 private constant MINIMUM_USD = 50e18;
+    uint256 private constant MINIMUM_USD = 1e18;
     uint256 private constant GOAL_USD = 1_000e18;
     uint256 private constant DURATION = 1 days;
 
-    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 0.024 ether;
+    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 0.0004 ether;
     uint256 private constant STANDARD_CONTRIBUTION = 0.1 ether;
     uint256 private constant GOAL_MEETING_CONTRIBUTION = 0.5 ether;
     uint256 private constant EXTRA_CONTRIBUTION = 0.1 ether;
@@ -111,6 +111,23 @@ contract CrowdfundingTest is Test {
         assertEq(crowdfunding.getFunderAtIndex(0), USER);
         assertEq(crowdfunding.getAddressToAmountFunded(USER), STANDARD_CONTRIBUTION * 2);
         assertEq(crowdfunding.getTotalUsdRaised(), 400e18);
+    }
+
+    function testSetMinimumUsdContributionUpdatesThreshold() external {
+        crowdfunding.setMinimumUsdContribution(5e18);
+
+        assertEq(crowdfunding.getMinimumUsdContribution(), 5e18);
+    }
+
+    function testSetMinimumUsdContributionRevertsWhenCallerIsNotOwner() external {
+        vm.prank(NON_OWNER);
+        vm.expectRevert(Crowdfunding.Crowdfunding__NotOwner.selector);
+        crowdfunding.setMinimumUsdContribution(5e18);
+    }
+
+    function testSetMinimumUsdContributionRevertsWhenZero() external {
+        vm.expectRevert(Crowdfunding.Crowdfunding__InvalidMinimumUsd.selector);
+        crowdfunding.setMinimumUsdContribution(0);
     }
 
     function testWithdrawRevertsWhenCallerIsNotOwner() external {

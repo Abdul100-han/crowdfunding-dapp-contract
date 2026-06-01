@@ -50,6 +50,9 @@ contract Crowdfunding {
   /// @notice Thrown when constructor arguments are invalid.
   error Crowdfunding__InvalidConstructorArgs();
 
+  /// @notice Thrown when setting a zero minimum USD contribution.
+  error Crowdfunding__InvalidMinimumUsd();
+
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
     //////////////////////////////////////////////////////////////*/
@@ -69,6 +72,10 @@ contract Crowdfunding {
   /// @param amount The amount of ETH refunded in wei.
   event Refunded(address indexed funder, uint256 amount);
 
+  /// @notice Emitted when the owner updates the minimum USD contribution.
+  /// @param newMinimumUsd The new minimum in USD with 18 decimals.
+  event MinimumUsdContributionUpdated(uint256 newMinimumUsd);
+
     /*//////////////////////////////////////////////////////////////
                             STATE VARIABLES
     //////////////////////////////////////////////////////////////*/
@@ -77,7 +84,7 @@ contract Crowdfunding {
   address private immutable i_owner;
 
   /// @notice Minimum allowed contribution expressed in USD with 18 decimals.
-  uint256 private immutable i_minimumUsdContribution;
+  uint256 private s_minimumUsdContribution;
 
   /// @notice Funding goal expressed in USD with 18 decimals.
   uint256 private immutable i_fundingGoalUsd;
@@ -109,7 +116,7 @@ contract Crowdfunding {
 
   /**
    * @notice Deploys a new crowdfunding campaign.
-   * @param minimumUsdContribution Minimum contribution in USD with 18 decimals (e.g. `5e18` for $5).
+   * @param minimumUsdContribution Minimum contribution in USD with 18 decimals (e.g. `1e18` for $1).
    * @param fundingGoalUsd Target raise amount in USD with 18 decimals.
    * @param durationInSeconds Campaign length in seconds from deployment time.
    * @param priceFeed Address of the Chainlink ETH/USD AggregatorV3 price feed.
@@ -128,7 +135,7 @@ contract Crowdfunding {
     }
 
     i_owner = msg.sender;
-    i_minimumUsdContribution = minimumUsdContribution;
+    s_minimumUsdContribution = minimumUsdContribution;
     i_fundingGoalUsd = fundingGoalUsd;
     i_deadline = block.timestamp + durationInSeconds;
     i_priceFeed = AggregatorV3Interface(priceFeed);
@@ -153,7 +160,7 @@ contract Crowdfunding {
     }
 
     uint256 usdValue = _getEthUsdValue(msg.value);
-    if (usdValue < i_minimumUsdContribution) {
+    if (usdValue < s_minimumUsdContribution) {
       revert Crowdfunding__BelowMinimumUsd();
     }
 
@@ -216,6 +223,20 @@ contract Crowdfunding {
     emit Refunded(msg.sender, amountToRefund);
   }
 
+  /**
+   * @notice Updates the minimum USD contribution threshold.
+   * @dev Callable only by the owner. Reverts if `_newMinUsd` is zero.
+   * @param _newMinUsd New minimum contribution in USD with 18 decimals (e.g. `1e18` for $1).
+   */
+  function setMinimumUsdContribution(uint256 _newMinUsd) external onlyOwner {
+    if (_newMinUsd == 0) {
+      revert Crowdfunding__InvalidMinimumUsd();
+    }
+
+    s_minimumUsdContribution = _newMinUsd;
+    emit MinimumUsdContributionUpdated(_newMinUsd);
+  }
+
     /*//////////////////////////////////////////////////////////////
                              VIEW FUNCTIONS
     //////////////////////////////////////////////////////////////*/
@@ -233,7 +254,7 @@ contract Crowdfunding {
    * @return The minimum contribution threshold.
    */
   function getMinimumUsdContribution() external view returns (uint256) {
-    return i_minimumUsdContribution;
+    return s_minimumUsdContribution;
   }
 
   /**

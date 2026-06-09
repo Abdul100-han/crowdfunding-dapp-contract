@@ -66,12 +66,12 @@ contract CrowdfundingTest is Test {
     uint8 private constant FEED_DECIMALS = 8;
     int256 private constant INITIAL_ETH_PRICE = 2_000e8;
 
-    uint256 private constant MINIMUM_USD = 2e17;
+    uint256 private constant MINIMUM_USD = 2e15;
     uint256 private constant GOAL_USD = 2e18;
     uint256 private constant DURATION = 1 days;
 
-    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 0.00009 ether;
-    /// @dev ~$1 at $2,000/ETH — above $0.20 minimum, below $2 goal.
+    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 9e11;
+    /// @dev ~$1 at $2,000/ETH — above $0.002 minimum, below $2 goal.
     uint256 private constant STANDARD_CONTRIBUTION = 0.0005 ether;
     /// @dev ~$2 at $2,000/ETH — meets the funding goal.
     uint256 private constant GOAL_MEETING_CONTRIBUTION = 0.001 ether;

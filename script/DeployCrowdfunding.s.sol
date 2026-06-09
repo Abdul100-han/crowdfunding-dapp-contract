@@ -11,7 +11,7 @@ import {Crowdfunding} from "../src/Crowdfunding.sol";
  */
 contract DeployCrowdfunding is Script {
     /// @notice Minimum contribution threshold expressed in USD with 18 decimals.
-    uint256 private constant MINIMUM_USD_CONTRIBUTION = 2e17;
+    uint256 private constant MINIMUM_USD_CONTRIBUTION = 2e15;
 
     /// @notice Funding target expressed in USD with 18 decimals.
     uint256 private constant FUNDING_TARGET_USD = 2e18;

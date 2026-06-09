@@ -66,14 +66,16 @@ contract CrowdfundingTest is Test {
     uint8 private constant FEED_DECIMALS = 8;
     int256 private constant INITIAL_ETH_PRICE = 2_000e8;
 
-    uint256 private constant MINIMUM_USD = 1e18;
-    uint256 private constant GOAL_USD = 1_000e18;
+    uint256 private constant MINIMUM_USD = 2e17;
+    uint256 private constant GOAL_USD = 2e18;
     uint256 private constant DURATION = 1 days;
 
-    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 0.0004 ether;
-    uint256 private constant STANDARD_CONTRIBUTION = 0.1 ether;
-    uint256 private constant GOAL_MEETING_CONTRIBUTION = 0.5 ether;
-    uint256 private constant EXTRA_CONTRIBUTION = 0.1 ether;
+    uint256 private constant BELOW_MINIMUM_CONTRIBUTION = 0.00009 ether;
+    /// @dev ~$1 at $2,000/ETH — above $0.20 minimum, below $2 goal.
+    uint256 private constant STANDARD_CONTRIBUTION = 0.0005 ether;
+    /// @dev ~$2 at $2,000/ETH — meets the funding goal.
+    uint256 private constant GOAL_MEETING_CONTRIBUTION = 0.001 ether;
+    uint256 private constant EXTRA_CONTRIBUTION = 0.0002 ether;
 
     address private constant USER = address(0xA11CE);
     address private constant USER_TWO = address(0xB0B);
@@ -110,7 +112,7 @@ contract CrowdfundingTest is Test {
         assertEq(crowdfunding.getFunderCount(), 1);
         assertEq(crowdfunding.getFunderAtIndex(0), USER);
         assertEq(crowdfunding.getAddressToAmountFunded(USER), STANDARD_CONTRIBUTION * 2);
-        assertEq(crowdfunding.getTotalUsdRaised(), 400e18);
+        assertEq(crowdfunding.getTotalUsdRaised(), 2e18);
     }
 
     function testSetMinimumUsdContributionUpdatesThreshold() external {

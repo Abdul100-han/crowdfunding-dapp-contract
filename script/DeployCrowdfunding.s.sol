@@ -11,10 +11,10 @@ import {Crowdfunding} from "../src/Crowdfunding.sol";
  */
 contract DeployCrowdfunding is Script {
     /// @notice Minimum contribution threshold expressed in USD with 18 decimals.
-    uint256 private constant MINIMUM_USD_CONTRIBUTION = 1e18;
+    uint256 private constant MINIMUM_USD_CONTRIBUTION = 2e17;
 
     /// @notice Funding target expressed in USD with 18 decimals.
-    uint256 private constant FUNDING_TARGET_USD = 1_000e18;
+    uint256 private constant FUNDING_TARGET_USD = 2e18;
 
     /// @notice Campaign duration expressed in seconds for a 60-day campaign.
     uint256 private constant CAMPAIGN_DURATION = 60 days;
